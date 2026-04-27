@@ -309,8 +309,15 @@ async function removeTaskTag(db, taskId, tag) {
  *       matched), and your $set path uses `subtasks.$.done`.
  */
 async function toggleSubtask(db, taskId, subtaskTitle, newDone) {
-  // TODO: implement
-  throw new Error('toggleSubtask not implemented');
+  const result = await db.collection('tasks').updateOne(
+    { _id: taskId, 'subtasks.title': subtaskTitle },
+    { $set: { 'subtasks.$.done': newDone } }
+  );
+
+  return {
+    matchedCount: result.matchedCount,
+    modifiedCount: result.modifiedCount
+  };
 }
 
 /**
@@ -325,8 +332,8 @@ async function toggleSubtask(db, taskId, subtaskTitle, newDone) {
  * Hint: deleteOne.
  */
 async function deleteTask(db, taskId) {
-  // TODO: implement
-  throw new Error('deleteTask not implemented');
+  const result = await db.collection('tasks').deleteOne({ _id: taskId });
+  return { deletedCount: result.deletedCount };
 }
 
 /**
@@ -349,8 +356,17 @@ async function deleteTask(db, taskId) {
  *       Build the filter conditionally based on whether projectId was passed.
  */
 async function searchNotes(db, ownerId, tags, projectId) {
-  // TODO: implement
-  throw new Error('searchNotes not implemented');
+  const filter = {
+    ownerId: ownerId,
+    tags: { $in: tags }
+  };
+
+  if (projectId) filter.projectId = projectId;
+
+  return await db.collection('notes')
+    .find(filter)
+    .sort({ createdAt: -1 })
+    .toArray();
 }
 
 /**
