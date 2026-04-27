@@ -108,10 +108,14 @@ async function listUserProjects(db, ownerId) {
  * Hint: insertOne again — just remember to add the defaults yourself.
  */
 async function createProject(db, projectData) {
-  // TODO: implement
-  throw new Error('createProject not implemented');
+  return await db.collection('projects').insertOne({
+    ownerId: projectData.ownerId,
+    name: projectData.name,
+    description: projectData.description || '',
+    archived: false,
+    createdAt: new Date()
+  });
 }
-
 /**
  * Query 5: archiveProject
  * -------------------------------------------------------------
